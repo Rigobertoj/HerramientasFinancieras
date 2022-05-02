@@ -1,4 +1,6 @@
+import copy as cp
 import pandas as pd
+import numpy as np
 class MetodosFinancieros():
     nombre = None 
     ubicacion = None 
@@ -26,16 +28,34 @@ class MetodosFinancieros():
         'Estudio de la utilidad':None,
         'Margen de ganacias por unidad':None
     }
+
+    cuentasDeBalance = {
+        'ACTIVOS': '-------------',
+        'Acitvos Circulantes': None,
+        'Activos Fijos': None,
+        'Activos Diferidos':None,
+        ' ':'',
+        'Total de Activos'
+        ' ':'',
+        'PASIVOS': '-------------',
+        'Pasivos Circulantes':None,
+        'Pasivos Fijos': None,
+        ' ':'',
+        'Total de Pasivos':None,
+        ' ':'',
+        'CAPITAL':'-------------',
+        'Capital social': None,
+        'Utilidad del ejer':None,
+        'Utilidades anteriores':None,
+        'Otras Reservas': None,
+        ' ':'',
+        'Total del capital': None
+        
+    }
     RazonesSimples = [Solvencia,Liquidez,Estabilidad]
 
     def __init__(self):
         pass
-#medodo que nos permite recibir como argumentos alguno de los datos de la empresa
-#pero primero comprubea si ya hay datos existentes y si los hay solo retorna esos valores para mostrarselos a
-#los usuarios de no ser asi recibe los parametros y se los asigna 3 parametros que tiene como valor None 
-#y en cuanto se le aplican los cambios o los datos los imprime por pantalla 
-
-#falta realizar la logica que nos permita que si solo se quiere cambiar un parametro solo se cambie ese parametro 
 
     def Info(self, Name = None , Ubicasion = None, Periodo = None):
         if Name == None and Ubicasion == None and Periodo == None:
@@ -54,17 +74,23 @@ El nombre de la empresa: {}\t
 Ubicasion de la empresa: {}\t
 Periodo del analisis:    {}\t
         """.format(self.nombre, self.ubicacion, self.Periodo))
-
+    
+    
     #!metodos de Razones Simples
     #? metodos de liquidez
 
     def AnalisisLiquidez(self,ActivoCirculante = None, PasivoCirculante = None,Inventario = None):
+        self.cuentasDeBalance['Acitvos Circulantes'] = ActivoCirculante
+        self.cuentasDeBalance['Pasivos Circulantes'] = PasivoCirculante
+        
         self.capitalNeto(ActivoCirculante,PasivoCirculante)
         self.razonLiquidez(ActivoCirculante, PasivoCirculante)
         self.pruebaAcido(ActivoCirculante, PasivoCirculante, Inventario)
         pass
 
     def capitalNeto(self, ActCir, PasCir):
+        self.cuentasDeBalance['Acitvos Circulantes'] = ActCir
+        self.cuentasDeBalance['Pasivos Circulantes'] = PasCir
         capitalNeto = ActCir - PasCir
         self.Liquidez['capital neto'] = capitalNeto
         print(capitalNeto)
@@ -85,6 +111,7 @@ Periodo del analisis:    {}\t
     def DateLiquidez(self):
         dataLiquidez = self.Liquidez
         series = pd.Series(dataLiquidez)
+        series.round(decimals=5)
         return series
 
     #? metodos de solvencia 
@@ -173,19 +200,55 @@ Periodo del analisis:    {}\t
     def razonesSimples(self):
         rS = self.RazonesSimples
         series = pd.Series(rS)
-        return series 
-
-    
-    
+        return series  
+#Terminar la cuentas enlazar las cuentas de balance
     #!
-a = MetodosFinancieros()
-# a.capitalNeto(1622119, 240038)
-# a.razonLiquidez(1622119, 240038)
-# a.pruebaAcido(1622119, 240038 ,950000)
+class RazonesEstandar():
+    
+    def __init__(self) -> None:
+        pass
+    
+    def ECapitalNetoTrabajo(*args):
+        pass
 
-# deudadTotales = 1109500 + 240038 
-# a.solvenciaTotal(2417986, deudadTotales)
-# a.firmeza(548907,1109500)
+class PorcientosIntegrales():
+    def __init__(self) -> None:
+        pass
 
-a.DateLiquidez
-a.DateSolvencia
+class ControlPresupuestario():
+    def __init__(self) -> None:
+        pass
+
+    def unidadesDeEquilibrio(name,ventasNetas, CostoDeVenta,GastosAdministrativos, listPdeCrecimineto = [], listPdeCostoAdministrativo = [], years = []):
+        print("""
+estado inicial antes de aplicar crecimiento a la empresa
+                        {}
+    ventas netas {}
+(-)costo de venta {}
+
+(=)utilidad bruta {}
+(-)gastos administrativos {}
+
+(=)utilidad neta 0
+    """.format(name,ventasNetas, CostoDeVenta, GastosAdministrativos, GastosAdministrativos))
+        for index in range(len(years)):
+            year = years[index]
+            ventasNetas *= listPdeCrecimineto[index]
+            CostoDeVenta *= listPdeCrecimineto[index]
+        
+            utilidadBruta = ventasNetas -CostoDeVenta
+            GastosAdministrativos *= listPdeCostoAdministrativo[index]
+        
+            utilidadNeta = utilidadBruta -GastosAdministrativos
+            print("""
+estado de resultados del año {}
+
+    ventasNetas => {:10,.2f}
+(-) costoDeVenta => {:10,.2f}
+
+(=) utilidad bruta => {:10,.2f}
+(-) gastosAdministrativos => {:10,.2f}
+
+(-) utilidad neta => {:10,.2f}
+___________________________________________""".format(year,ventasNetas,CostoDeVenta,utilidadBruta,GastosAdministrativos,utilidadNeta)
+)
