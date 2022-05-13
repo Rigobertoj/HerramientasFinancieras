@@ -1,7 +1,6 @@
-import copy as cp
 import pandas as pd
 import numpy as np
-class MetodosFinancieros():
+class RazonesSimples():
     nombre = None 
     ubicacion = None 
     Periodo = None
@@ -34,9 +33,9 @@ class MetodosFinancieros():
         'Acitvos Circulantes': None,
         'Activos Fijos': None,
         'Activos Diferidos':None,
-        ' ':'',
+        ' ':' ',
         'Total de Activos'
-        ' ':'',
+        ' ':' ',
         'PASIVOS': '-------------',
         'Pasivos Circulantes':None,
         'Pasivos Fijos': None,
@@ -216,18 +215,51 @@ class PorcientosIntegrales():
         pass
 
 class ControlPresupuestario():
+
+    equilibrio = {
+        'Costo Fijo': None,
+        'Precio de venta': None,
+        'Coste Variable': None,
+    }
     def __init__(self) -> None:
         pass
+    def unidadesDe_equilibrio(self,gastosFijos, PresioDeVenta, CostoDeVenta):
+        Q = gastosFijos / (PresioDeVenta - CostoDeVenta)
+        return Q
 
+    def PuntoDeEquilibrio(self, CostoFijo, PrecioDeVenta, CostoVariable):
+        NQ = CostoFijo/ (PrecioDeVenta - CostoVariable)
+        VentasNetas = NQ * PrecioDeVenta
+        CostoDeVenta = NQ * CostoVariable
+        utilidadBruta = VentasNetas - CostoDeVenta
+        utiliadNeta = utilidadBruta - CostoFijo
+        self.equilibrio['Costo Fijo'] = CostoFijo
+        self.equilibrio['Precio de venta'] = PrecioDeVenta
+        self.equilibrio['Coste Variable'] = CostoVariable
+        print("""
+unidades de equilibrio  {:3,.2f}
+gi
+\t\t Estado de resultados 
+
+Ventas Netas        \t{:10,.4f}
+Costo de venta      \t{:10,.4f}
+
+Utilidad Bruta         \t{:10,.4f}
+Gastos administrativos  {:6,.4f} 
+
+UtilidadNeta => {}
+        """.format(NQ, VentasNetas, CostoDeVenta, utilidadBruta, CostoFijo, utiliadNeta))
+
+#metodo el cual nos permite recibir varios argumentos que nos permitan optener un pequeño estado de resultados donde nos devuelva el crecimineto de la empresa en uns años posteriores
     def unidadesDeEquilibrio(name,ventasNetas, CostoDeVenta,GastosAdministrativos, listPdeCrecimineto = [], listPdeCostoAdministrativo = [], years = []):
         print("""
 estado inicial antes de aplicar crecimiento a la empresa
                         {}
-    ventas netas {}
-(-)costo de venta {}
+    ventas netas {:10,.2f}
+(-)costo de venta {:10,.2f}
 
-(=)utilidad bruta {}
-(-)gastos administrativos {}
+(=)utilidad bruta {:10,.2f}
+(-)gastos administrativos {:10,.2f}
 
 (=)utilidad neta 0
     """.format(name,ventasNetas, CostoDeVenta, GastosAdministrativos, GastosAdministrativos))
@@ -250,5 +282,70 @@ estado de resultados del año {}
 (-) gastosAdministrativos => {:10,.2f}
 
 (-) utilidad neta => {:10,.2f}
-___________________________________________""".format(year,ventasNetas,CostoDeVenta,utilidadBruta,GastosAdministrativos,utilidadNeta)
-)
+___________________________________________""".format(year,ventasNetas,CostoDeVenta,utilidadBruta,GastosAdministrativos,utilidadNeta))
+# funcion for examen de resultados
+    def volumenDeVentas(ventas,costoDeVenta,gastosFijos):
+        utilidadBruta = ventas - costoDeVenta
+        utilidasNeta = utilidadBruta - gastosFijos
+        
+        CV = utilidadBruta/ventas
+        y = gastosFijos/CV
+        MC = (1 - CV)
+        z = y * (1 - CV)
+        utilidad_Bruta = y - z
+        utilidad_neta = utilidad_Bruta - gastosFijos
+    
+        return print(f"""
+utilidad bruta {utilidadBruta:10,.2f}/ Ventas {ventas:10,.2f} = CV {CV:10,.2f}
+gastos fijos {gastosFijos:10,.2f}/ {CV:10,.2f} = {y:10,.2f}(ventas)
+(ventas) {y:10,.2f} X MC {MC:10,.2f}
+
+ventas {y:10,.2f}
+Costo Variable {z:10,.2f}
+
+utilidad bruta {utilidad_Bruta:10,.2f}
+Gastos Fijos {gastosFijos:10,.2f}
+
+utilidad Neta {utilidad_neta:10,.2f}
+""")
+
+
+    def volumenDeVentas2( self,precioDeVenta, costoVariable, ventas = [],costoDeVenta = [],gastosFijos = [],):
+        for i in range(len(ventas)):
+    
+            utilidadBruta = ventas[i] - costoDeVenta[i]
+            utilidasNeta = utilidadBruta - gastosFijos[i]
+            
+            CV = utilidadBruta/ventas[i]
+            y = gastosFijos[i]/CV
+            MC = (1 - CV)
+            z = y * (1 - CV)
+            utilidad_Bruta = y - z
+            utilidad_neta = utilidad_Bruta - gastosFijos[i]
+            Gf = gastosFijos[i]
+            # print("x => ",X, "y => ",y ,"z => ",z)
+            Q = self.unidadesDe_equilibrio(Gf,precioDeVenta,costoVariable)
+            print(f"""
+___________________________________________________________
+utilidad bruta {utilidadBruta:10,.2f}/ Ventas {ventas[i]:10,.2f} = CV {CV}
+gastos fijos {gastosFijos[i]:10,.2f}/ {CV} = {y:10,.2f}(ventas)
+(ventas) {y:10,.2f} X MC {MC}
+
+ventas {y:10,.2f}
+Costo Variable {z:10,.2f}
+
+utilidad bruta {utilidad_Bruta:10,.2f}
+Gastos Fijos {gastosFijos[i]:10,.2f}
+
+utilidad Neta {utilidad_neta}
+
+unidades de equilibrio = Gf {Gf:10,.2f} / Pv {precioDeVenta:10,.2f} - Cv{costoVariable:10,.2f} = Q {Q:10,.2f}""")
+
+class MetodosFinancieros():
+    def __init__(self) -> None:
+        pass
+
+
+
+collanaVolumenDeVentas = ControlPresupuestario()
+collanaVolumenDeVentas.volumenDeVentas2(30000,15003.4,[400000,800000,900000],[200000,400000,450000],[75000,200000,250000])
